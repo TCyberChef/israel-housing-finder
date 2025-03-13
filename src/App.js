@@ -9,7 +9,7 @@ function App() {
         <p>
           Find your perfect home in Israel
         </p>
-        <p>
+        <p className="coming-soon">
           Coming soon...
         </p>
       </header>
