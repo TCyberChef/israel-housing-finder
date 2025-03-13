@@ -2,7 +2,7 @@
 
 A modern web application to help people find their perfect home in Israel. This project provides an interactive interface to search for apartments and houses across Israel with useful filters and a map-based interface.
 
-## Features
+## Features (Coming Soon)
 
 - Interactive map showing available properties
 - Advanced search filters (price, size, rooms, etc.)
@@ -32,6 +32,12 @@ A modern web application to help people find their perfect home in Israel. This 
    ```bash
    npm start
    ```
+
+## Deployment
+
+This project is automatically deployed to GitHub Pages when changes are pushed to the main branch.
+
+Visit the live site at: https://tcyberchef.github.io/israel-housing-finder/
 
 ## Contributing
 
