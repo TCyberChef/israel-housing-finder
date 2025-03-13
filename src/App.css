@@ -16,3 +16,23 @@
 .App-link {
   color: #61dafb;
 }
+
+.coming-soon {
+  color: #61dafb;
+  font-weight: bold;
+  margin-top: 20px;
+  font-size: 1.5em;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
