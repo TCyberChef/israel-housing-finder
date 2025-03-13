@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/israel-housing-finder/static/css/main.bb898fee.css",
-    "main.js": "/israel-housing-finder/static/js/main.9702eabc.js",
+    "main.css": "/israel-housing-finder/static/css/main.c487c635.css",
+    "main.js": "/israel-housing-finder/static/js/main.51f0f751.js",
     "index.html": "/israel-housing-finder/index.html",
-    "main.bb898fee.css.map": "/israel-housing-finder/static/css/main.bb898fee.css.map",
-    "main.9702eabc.js.map": "/israel-housing-finder/static/js/main.9702eabc.js.map"
+    "main.c487c635.css.map": "/israel-housing-finder/static/css/main.c487c635.css.map",
+    "main.51f0f751.js.map": "/israel-housing-finder/static/js/main.51f0f751.js.map"
   },
   "entrypoints": [
-    "static/css/main.bb898fee.css",
-    "static/js/main.9702eabc.js"
+    "static/css/main.c487c635.css",
+    "static/js/main.51f0f751.js"
   ]
 }
