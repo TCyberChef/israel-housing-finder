@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 1 of 10 (Infrastructure Setup)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-02-13 — Completed Plan 01-01: Vite + TypeScript Migration
+Last activity: 2026-02-13 — Completed Plan 01-02: Supabase & Deployment Pipeline
 
-Progress: [█░░░░░░░░░] 10%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 1
-- Average duration: 3 min
-- Total execution time: 0.05 hours
+- Total plans completed: 2
+- Average duration: 2 min
+- Total execution time: 0.07 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01-infrastructure-setup | 1 | 3 min | 3 min |
+| 01-infrastructure-setup | 2 | 4 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (3 min)
-- Trend: Establishing baseline
+- Last 5 plans: 01-01 (3 min), 01-02 (1 min)
+- Trend: Accelerating
 
 *Updated after each plan completion*
 
@@ -45,6 +45,8 @@ Recent decisions affecting current work:
 - **Vite over other build tools:** Industry standard for React, 40x faster builds than CRA (Plan 01-01)
 - **TypeScript strict mode:** Catch type errors early, better IDE support (Plan 01-01)
 - **GitHub Pages base path configured:** Set to `/israel-housing-finder/` in vite.config.ts (Plan 01-01)
+- **Vite environment variables (import.meta.env):** Vite-specific pattern, type-safe, build-time validated (Plan 01-02)
+- **Two-job deployment workflow:** Better separation of concerns, artifacts reusable, follows GitHub Actions best practices (Plan 01-02)
 
 ### Pending Todos
 
@@ -62,5 +64,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13 (plan execution)
-Stopped at: Completed 01-01-PLAN.md (Vite + TypeScript Migration)
+Stopped at: Completed 01-02-PLAN.md (Supabase & Deployment Pipeline)
 Resume file: None
