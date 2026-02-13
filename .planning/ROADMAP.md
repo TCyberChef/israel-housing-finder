@@ -12,7 +12,7 @@ Build a free rental apartment aggregator for Israel by establishing the scraping
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Infrastructure Setup** - Project foundation and deployment pipeline
+- [x] **Phase 1: Infrastructure Setup** - Project foundation and deployment pipeline (2026-02-13)
 - [ ] **Phase 2: Database & Core Schema** - Supabase database with listings tables and RLS
 - [ ] **Phase 3: Yad2 Scraper** - First data source with basic deduplication
 - [ ] **Phase 4: Frontend Foundation** - React app with map and bilingual UI
@@ -37,9 +37,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md - Migrate to Vite + TypeScript build system
-- [ ] 01-02-PLAN.md - Setup Supabase client and GitHub Actions deployment
-- [ ] 01-03-PLAN.md - Verify deployment pipeline and Supabase connection
+- [x] 01-01-PLAN.md - Migrate to Vite + TypeScript build system
+- [x] 01-02-PLAN.md - Setup Supabase client and GitHub Actions deployment
+- [x] 01-03-PLAN.md - Verify deployment pipeline and Supabase connection
 
 ### Phase 2: Database & Core Schema
 **Goal**: Database schema supports listings with deduplication, Hebrew text, and public read access
@@ -185,7 +185,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Infrastructure Setup | 0/3 | Not started | - |
+| 1. Infrastructure Setup | 3/3 | ✓ Complete | 2026-02-13 |
 | 2. Database & Core Schema | 0/TBD | Not started | - |
 | 3. Yad2 Scraper | 0/TBD | Not started | - |
 | 4. Frontend Foundation | 0/TBD | Not started | - |
