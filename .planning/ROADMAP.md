@@ -67,10 +67,12 @@ Plans:
   3. Duplicate listings (same address + rooms + size) are detected and not re-inserted
   4. Stale listings (not seen in 7 days) are marked inactive
   5. Scraper respects rate limits and avoids IP blocking
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md - Set up scraper infrastructure with Puppeteer and TypeScript
+- [ ] 03-02-PLAN.md - Build Yad2 scraper with stealth and HTML parsing
+- [ ] 03-03-PLAN.md - Integrate database operations and GitHub Actions workflow
 
 ### Phase 4: Frontend Foundation
 **Goal**: Users can view listings on an interactive map in Hebrew or English
@@ -188,7 +190,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 |-------|----------------|--------|-----------|
 | 1. Infrastructure Setup | 3/3 | ✓ Complete | 2026-02-13 |
 | 2. Database & Core Schema | 2/2 | ✓ Complete | 2026-02-13 |
-| 3. Yad2 Scraper | 0/TBD | Not started | - |
+| 3. Yad2 Scraper | 0/3 | Not started | - |
 | 4. Frontend Foundation | 0/TBD | Not started | - |
 | 5. Search & Filters | 0/TBD | Not started | - |
 | 6. Listing Details | 0/TBD | Not started | - |
