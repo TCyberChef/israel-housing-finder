@@ -9,29 +9,29 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 
 ## Current Position
 
-Phase: 2 of 10 (Database & Core Schema) - IN PROGRESS
-Plan: 1 of 2 in current phase - COMPLETE
-Status: Executing Phase 2
-Last activity: 2026-02-13 — Completed 02-01-PLAN.md (Initialize Supabase migrations)
+Phase: 2 of 10 (Database & Core Schema) - COMPLETE
+Plan: 2 of 2 in current phase - COMPLETE
+Status: Phase 2 complete, ready for Phase 3
+Last activity: 2026-02-13 — Completed 02-02-PLAN.md (Deploy schema to Supabase)
 
-Progress: [██░░░░░░░░] 15%
+Progress: [██░░░░░░░░] 20%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 3
-- Average duration: 2 min
-- Total execution time: 0.11 hours
+- Total plans completed: 4
+- Average duration: 2.25 min
+- Total execution time: 0.15 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-infrastructure-setup | 2 | 4 min | 2 min |
-| 02-database-core-schema | 1 | 2 min | 2 min |
+| 02-database-core-schema | 2 | 5 min | 2.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (3 min), 01-02 (1 min), 02-01 (2 min)
+- Last 5 plans: 01-01 (3 min), 01-02 (1 min), 02-01 (2 min), 02-02 (3 min)
 - Trend: Steady
 
 *Updated after each plan completion*
@@ -53,6 +53,8 @@ Recent decisions affecting current work:
 - **RLS with public read, service write:** Database-enforced security, anon role read-only (Plan 02-01)
 - **Defer lat/lng geocoding:** Address/city text sufficient for Phase 2, add geocoding in Phase 9 (Plan 02-01)
 - **PostgreSQL trigger for updated_at:** Automatic timestamp maintenance, ensures consistency (Plan 02-01)
+- **Hebrew text via Supabase SQL Editor:** Confirmed UTF-8 storage works correctly, no encoding corruption (Plan 02-02)
+- **Multi-source JSONB with 2 platforms:** Validates cross-platform aggregation in sources array (Plan 02-02)
 
 ### Pending Todos
 
@@ -70,5 +72,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13 (plan execution)
-Stopped at: Completed 02-01-PLAN.md (Initialize Supabase migrations infrastructure)
+Stopped at: Completed 02-02-PLAN.md (Deploy schema to Supabase) - Phase 2 complete
 Resume file: None
