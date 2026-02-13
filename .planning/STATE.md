@@ -5,33 +5,34 @@
 See: .planning/PROJECT.md (updated 2026-02-13)
 
 **Core value:** Find real, current rental apartments across all of Israel from one place, for free - no matter which site the listing was originally posted on.
-**Current focus:** Phase 1 - Infrastructure Setup
+**Current focus:** Phase 2 - Database & Core Schema
 
 ## Current Position
 
-Phase: 1 of 10 (Infrastructure Setup) - COMPLETE
-Plan: 3 of 3 in current phase
-Status: Phase complete, ready for Phase 2
-Last activity: 2026-02-13 — Phase 1 verified and complete
+Phase: 2 of 10 (Database & Core Schema) - IN PROGRESS
+Plan: 1 of 2 in current phase - COMPLETE
+Status: Executing Phase 2
+Last activity: 2026-02-13 — Completed 02-01-PLAN.md (Initialize Supabase migrations)
 
-Progress: [█░░░░░░░░░] 10%
+Progress: [██░░░░░░░░] 15%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 2
+- Total plans completed: 3
 - Average duration: 2 min
-- Total execution time: 0.07 hours
+- Total execution time: 0.11 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-infrastructure-setup | 2 | 4 min | 2 min |
+| 02-database-core-schema | 1 | 2 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (3 min), 01-02 (1 min)
-- Trend: Accelerating
+- Last 5 plans: 01-01 (3 min), 01-02 (1 min), 02-01 (2 min)
+- Trend: Steady
 
 *Updated after each plan completion*
 
@@ -47,6 +48,11 @@ Recent decisions affecting current work:
 - **GitHub Pages base path configured:** Set to `/israel-housing-finder/` in vite.config.ts (Plan 01-01)
 - **Vite environment variables (import.meta.env):** Vite-specific pattern, type-safe, build-time validated (Plan 01-02)
 - **Two-job deployment workflow:** Better separation of concerns, artifacts reusable, follows GitHub Actions best practices (Plan 01-02)
+- **JSONB arrays for photos/sources:** Simpler schema than separate tables, efficient for variable-length lists (Plan 02-01)
+- **SHA-256 hash for deduplication:** Industry standard with negligible collision risk, separate dedupe_hashes table (Plan 02-01)
+- **RLS with public read, service write:** Database-enforced security, anon role read-only (Plan 02-01)
+- **Defer lat/lng geocoding:** Address/city text sufficient for Phase 2, add geocoding in Phase 9 (Plan 02-01)
+- **PostgreSQL trigger for updated_at:** Automatic timestamp maintenance, ensures consistency (Plan 02-01)
 
 ### Pending Todos
 
@@ -64,5 +70,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-13 (plan execution)
-Stopped at: Completed 01-02-PLAN.md (Supabase & Deployment Pipeline)
+Stopped at: Completed 02-01-PLAN.md (Initialize Supabase migrations infrastructure)
 Resume file: None
