@@ -51,10 +51,11 @@ Plans:
   3. RLS policies allow public read-only access and service_role write access
   4. Hebrew text stores and retrieves correctly without encoding corruption
   5. Source attribution field tracks which platform(s) found each listing
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md - Initialize Supabase migrations and create core schema
+- [ ] 02-02-PLAN.md - Deploy and verify schema with Hebrew text testing
 
 ### Phase 3: Yad2 Scraper
 **Goal**: Listings from Yad2 appear in database with automatic updates and basic deduplication
