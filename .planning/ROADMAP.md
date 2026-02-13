@@ -13,7 +13,7 @@ Build a free rental apartment aggregator for Israel by establishing the scraping
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Infrastructure Setup** - Project foundation and deployment pipeline (2026-02-13)
-- [ ] **Phase 2: Database & Core Schema** - Supabase database with listings tables and RLS
+- [x] **Phase 2: Database & Core Schema** - Supabase database with listings tables and RLS (2026-02-13)
 - [ ] **Phase 3: Yad2 Scraper** - First data source with basic deduplication
 - [ ] **Phase 4: Frontend Foundation** - React app with map and bilingual UI
 - [ ] **Phase 5: Search & Filters** - Core discovery with all filter criteria
@@ -54,8 +54,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md - Initialize Supabase migrations and create core schema
-- [ ] 02-02-PLAN.md - Deploy and verify schema with Hebrew text testing
+- [x] 02-01-PLAN.md - Initialize Supabase migrations and create core schema
+- [x] 02-02-PLAN.md - Deploy and verify schema with Hebrew text testing
 
 ### Phase 3: Yad2 Scraper
 **Goal**: Listings from Yad2 appear in database with automatic updates and basic deduplication
@@ -187,7 +187,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Infrastructure Setup | 3/3 | ✓ Complete | 2026-02-13 |
-| 2. Database & Core Schema | 0/TBD | Not started | - |
+| 2. Database & Core Schema | 2/2 | ✓ Complete | 2026-02-13 |
 | 3. Yad2 Scraper | 0/TBD | Not started | - |
 | 4. Frontend Foundation | 0/TBD | Not started | - |
 | 5. Search & Filters | 0/TBD | Not started | - |
