@@ -34,10 +34,12 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. App deploys to GitHub Pages automatically on push to main
   3. Supabase project is created and connection works from frontend
   4. GitHub Actions workflow runs without errors
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: TBD
+- [ ] 01-01-PLAN.md - Migrate to Vite + TypeScript build system
+- [ ] 01-02-PLAN.md - Setup Supabase client and GitHub Actions deployment
+- [ ] 01-03-PLAN.md - Verify deployment pipeline and Supabase connection
 
 ### Phase 2: Database & Core Schema
 **Goal**: Database schema supports listings with deduplication, Hebrew text, and public read access
@@ -183,7 +185,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Infrastructure Setup | 0/TBD | Not started | - |
+| 1. Infrastructure Setup | 0/3 | Not started | - |
 | 2. Database & Core Schema | 0/TBD | Not started | - |
 | 3. Yad2 Scraper | 0/TBD | Not started | - |
 | 4. Frontend Foundation | 0/TBD | Not started | - |
