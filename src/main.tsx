@@ -1,4 +1,5 @@
 import './i18n/config'
+import './lib/leaflet-icons'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
