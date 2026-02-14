@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Infrastructure Setup** - Project foundation and deployment pipeline (2026-02-13)
 - [x] **Phase 2: Database & Core Schema** - Supabase database with listings tables and RLS (2026-02-13)
-- [ ] **Phase 3: Yad2 Scraper** - First data source with basic deduplication
+- [x] **Phase 3: Yad2 Scraper** - First data source with basic deduplication (2026-02-14)
 - [ ] **Phase 4: Frontend Foundation** - React app with map and bilingual UI
 - [ ] **Phase 5: Search & Filters** - Core discovery with all filter criteria
 - [ ] **Phase 6: Listing Details** - Full listing view with contact and source links
@@ -70,10 +70,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 03-01-PLAN.md - Add scraper columns (is_active, last_seen) to listings table
-- [ ] 03-02-PLAN.md - Set up scraper infrastructure with Puppeteer and TypeScript
-- [ ] 03-03-PLAN.md - Build Yad2 scraper with stealth and HTML parsing
-- [ ] 03-04-PLAN.md - Integrate database operations and GitHub Actions workflow
+- [x] 03-01-PLAN.md - Add scraper columns (is_active, last_seen) to listings table
+- [x] 03-02-PLAN.md - Set up scraper infrastructure with Puppeteer and TypeScript
+- [x] 03-03-PLAN.md - Build Yad2 scraper with stealth and HTML parsing
+- [x] 03-04-PLAN.md - Integrate database operations and GitHub Actions workflow
 
 ### Phase 4: Frontend Foundation
 **Goal**: Users can view listings on an interactive map in Hebrew or English
@@ -191,7 +191,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 |-------|----------------|--------|-----------|
 | 1. Infrastructure Setup | 3/3 | ✓ Complete | 2026-02-13 |
 | 2. Database & Core Schema | 2/2 | ✓ Complete | 2026-02-13 |
-| 3. Yad2 Scraper | 0/3 | Not started | - |
+| 3. Yad2 Scraper | 4/4 | ✓ Complete | 2026-02-14 |
 | 4. Frontend Foundation | 0/TBD | Not started | - |
 | 5. Search & Filters | 0/TBD | Not started | - |
 | 6. Listing Details | 0/TBD | Not started | - |
