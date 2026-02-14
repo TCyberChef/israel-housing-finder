@@ -64,6 +64,9 @@ Recent decisions affecting current work:
 - **Supabase service_role key for write access:** Not anon key, needed for insert/update on RLS-protected tables (Plan 03-04)
 - **Sequential per-listing upsert:** Error isolation over batch operations, single bad listing does not block others (Plan 03-04)
 - **Sources array rebuilt per scrape:** Simpler than JSONB merge; each scrape replaces sources array (Plan 03-04)
+- **React-leaflet v4.2.1 for React 18 compatibility:** v5.x requires React 19; v4.2.1 stable and provides same core functionality (Plan 04-01)
+- **Hebrew as fallback language:** Project requirement for Israeli rental market (Plan 04-01)
+- **localStorage for language persistence:** User language selection persists across page refresh with browser detection fallback (Plan 04-01)
 - **City-level coordinates from lookup table:** Sufficient for Phase 4 map browsing without external API calls (Plan 04-02)
 - **Optional latitude/longitude on Listing type:** Clean separation between database schema and frontend enrichment (Plan 04-02)
 
