@@ -67,12 +67,13 @@ Plans:
   3. Duplicate listings (same address + rooms + size) are detected and not re-inserted
   4. Stale listings (not seen in 7 days) are marked inactive
   5. Scraper respects rate limits and avoids IP blocking
-**Plans**: 3 plans
+**Plans**: 4 plans
 
 Plans:
-- [ ] 03-01-PLAN.md - Set up scraper infrastructure with Puppeteer and TypeScript
-- [ ] 03-02-PLAN.md - Build Yad2 scraper with stealth and HTML parsing
-- [ ] 03-03-PLAN.md - Integrate database operations and GitHub Actions workflow
+- [ ] 03-01-PLAN.md - Add scraper columns (is_active, last_seen) to listings table
+- [ ] 03-02-PLAN.md - Set up scraper infrastructure with Puppeteer and TypeScript
+- [ ] 03-03-PLAN.md - Build Yad2 scraper with stealth and HTML parsing
+- [ ] 03-04-PLAN.md - Integrate database operations and GitHub Actions workflow
 
 ### Phase 4: Frontend Foundation
 **Goal**: Users can view listings on an interactive map in Hebrew or English
