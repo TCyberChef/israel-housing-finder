@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 ## Current Position
 
 Phase: 3 of 10 (Yad2 Scraper)
-Plan: 2 of 4 in current phase - COMPLETE
+Plan: 3 of 4 in current phase - COMPLETE
 Status: In progress
-Last activity: 2026-02-14 — Completed 03-02-PLAN.md (Scraper infrastructure setup)
+Last activity: 2026-02-14 - Completed 03-03-PLAN.md (Yad2 scraper core implementation)
 
 Progress: [█████░░░░░] 50%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: 1.8 min
-- Total execution time: 0.19 hours
+- Total plans completed: 7
+- Average duration: 1.7 min
+- Total execution time: 0.22 hours
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: [█████░░░░░] 50%
 |-------|-------|-------|----------|
 | 01-infrastructure-setup | 2 | 4 min | 2 min |
 | 02-database-core-schema | 2 | 5 min | 2.5 min |
-| 03-yad2-scraper | 2 | 3 min | 1.5 min |
+| 03-yad2-scraper | 3 | 5 min | 1.7 min |
 
 **Recent Trend:**
-- Last 5 plans: 02-01 (2 min), 02-02 (3 min), 03-01 (1 min), 03-02 (2 min)
+- Last 5 plans: 02-02 (3 min), 03-01 (1 min), 03-02 (2 min), 03-03 (2 min)
 - Trend: Steady
 
 *Updated after each plan completion*
@@ -58,6 +58,8 @@ Recent decisions affecting current work:
 - **Multi-source JSONB with 2 platforms:** Validates cross-platform aggregation in sources array (Plan 02-02)
 - **Separate tsconfig.scraper.json:** Node.js CommonJS context independent of Vite frontend config (Plan 03-02)
 - **Pipe-delimited hash format:** address|rooms|size_sqm for deterministic deduplication matching DB schema (Plan 03-02)
+- **Separate extractListingsFromDOM function:** Clean serialization boundary between Node.js and browser contexts for page.evaluate (Plan 03-03)
+- **RawListing intermediate type:** Serializable DOM data mapped to Listing with platform-specific fields added post-extraction (Plan 03-03)
 
 ### Pending Todos
 
@@ -75,5 +77,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-14 (plan execution)
-Stopped at: Completed 03-02-PLAN.md (Scraper infrastructure setup)
+Stopped at: Completed 03-03-PLAN.md (Yad2 scraper core implementation)
 Resume file: None
