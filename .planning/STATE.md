@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-02-13)
 
 **Core value:** Find real, current rental apartments across all of Israel from one place, for free - no matter which site the listing was originally posted on.
-**Current focus:** Phase 3 - Yad2 Scraper
+**Current focus:** Phase 4 - Frontend Foundation
 
 ## Current Position
 
-Phase: 3 of 10 (Yad2 Scraper) - PHASE COMPLETE
-Plan: 4 of 4 in current phase - COMPLETE
-Status: Phase 3 complete
-Last activity: 2026-02-14 - Completed 03-04-PLAN.md (Scraper integration and GitHub Actions)
+Phase: 4 of 10 (Frontend Foundation)
+Plan: 2 of 3 in current phase - COMPLETE
+Status: In progress
+Last activity: 2026-02-14 - Completed 04-02-PLAN.md (Listings data layer)
 
 Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 8
-- Average duration: 1.8 min
-- Total execution time: 0.26 hours
+- Total plans completed: 9
+- Average duration: 1.7 min
+- Total execution time: 0.28 hours
 
 **By Phase:**
 
@@ -30,10 +30,11 @@ Progress: [██████░░░░] 60%
 | 01-infrastructure-setup | 2 | 4 min | 2 min |
 | 02-database-core-schema | 2 | 5 min | 2.5 min |
 | 03-yad2-scraper | 4 | 7 min | 1.8 min |
+| 04-frontend-foundation | 2 | 2 min | 1 min |
 
 **Recent Trend:**
-- Last 5 plans: 03-01 (1 min), 03-02 (2 min), 03-03 (2 min), 03-04 (2 min)
-- Trend: Steady
+- Last 5 plans: 03-02 (2 min), 03-03 (2 min), 03-04 (2 min), 04-01 (1 min), 04-02 (1 min)
+- Trend: Improving
 
 *Updated after each plan completion*
 
@@ -63,6 +64,8 @@ Recent decisions affecting current work:
 - **Supabase service_role key for write access:** Not anon key, needed for insert/update on RLS-protected tables (Plan 03-04)
 - **Sequential per-listing upsert:** Error isolation over batch operations, single bad listing does not block others (Plan 03-04)
 - **Sources array rebuilt per scrape:** Simpler than JSONB merge; each scrape replaces sources array (Plan 03-04)
+- **City-level coordinates from lookup table:** Sufficient for Phase 4 map browsing without external API calls (Plan 04-02)
+- **Optional latitude/longitude on Listing type:** Clean separation between database schema and frontend enrichment (Plan 04-02)
 
 ### Pending Todos
 
@@ -80,5 +83,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-14 (plan execution)
-Stopped at: Completed 03-04-PLAN.md (Scraper integration and GitHub Actions) - Phase 3 complete
+Stopped at: Completed 04-02-PLAN.md (Listings data layer with city-level geocoding)
 Resume file: None
