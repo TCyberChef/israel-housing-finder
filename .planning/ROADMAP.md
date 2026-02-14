@@ -88,7 +88,12 @@ Plans:
 **Plans**: TBD
 
 Plans:
-- [ ] 04-01: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 04-01-PLAN.md - Install dependencies and configure i18n/RTL
+- [ ] 04-02-PLAN.md - Create city geocoding and data layer
+- [ ] 04-03-PLAN.md - Build map and listing UI components
 
 ### Phase 5: Search & Filters
 **Goal**: Users can search and filter listings by all relevant criteria
