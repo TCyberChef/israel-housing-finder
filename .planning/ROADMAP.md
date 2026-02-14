@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Infrastructure Setup** - Project foundation and deployment pipeline (2026-02-13)
 - [x] **Phase 2: Database & Core Schema** - Supabase database with listings tables and RLS (2026-02-13)
 - [x] **Phase 3: Yad2 Scraper** - First data source with basic deduplication (2026-02-14)
-- [ ] **Phase 4: Frontend Foundation** - React app with map and bilingual UI
+- [x] **Phase 4: Frontend Foundation** - React app with map and bilingual UI (2026-02-14)
 - [ ] **Phase 5: Search & Filters** - Core discovery with all filter criteria
 - [ ] **Phase 6: Listing Details** - Full listing view with contact and source links
 - [ ] **Phase 7: Additional Sources** - Homeless and Facebook scrapers
@@ -91,9 +91,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 04-01-PLAN.md - Install dependencies and configure i18n/RTL
-- [ ] 04-02-PLAN.md - Create city geocoding and data layer
-- [ ] 04-03-PLAN.md - Build map and listing UI components
+- [x] 04-01-PLAN.md - Install dependencies and configure i18n/RTL
+- [x] 04-02-PLAN.md - Create city geocoding and data layer
+- [x] 04-03-PLAN.md - Build map and listing UI components
 
 ### Phase 5: Search & Filters
 **Goal**: Users can search and filter listings by all relevant criteria
@@ -197,7 +197,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 1. Infrastructure Setup | 3/3 | ✓ Complete | 2026-02-13 |
 | 2. Database & Core Schema | 2/2 | ✓ Complete | 2026-02-13 |
 | 3. Yad2 Scraper | 4/4 | ✓ Complete | 2026-02-14 |
-| 4. Frontend Foundation | 0/TBD | Not started | - |
+| 4. Frontend Foundation | 3/3 | ✓ Complete | 2026-02-14 |
 | 5. Search & Filters | 0/TBD | Not started | - |
 | 6. Listing Details | 0/TBD | Not started | - |
 | 7. Additional Sources | 0/TBD | Not started | - |
