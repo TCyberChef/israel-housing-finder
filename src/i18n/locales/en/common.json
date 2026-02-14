@@ -1,0 +1,16 @@
+{
+  "header": {
+    "title": "Israel Housing Finder",
+    "languageToggle": "עברית"
+  },
+  "map": {
+    "loading": "Loading listings...",
+    "noListings": "No listings found"
+  },
+  "listing": {
+    "price": "₪{{price}}/month",
+    "rooms": "{{count}} rooms",
+    "sqm": "{{size}} sqm",
+    "floor": "Floor {{floor}}"
+  }
+}

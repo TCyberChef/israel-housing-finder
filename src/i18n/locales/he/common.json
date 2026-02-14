@@ -1,0 +1,16 @@
+{
+  "header": {
+    "title": "חיפוש דירות בישראל",
+    "languageToggle": "English"
+  },
+  "map": {
+    "loading": "טוען נכסים...",
+    "noListings": "לא נמצאו נכסים"
+  },
+  "listing": {
+    "price": "{{price}} ₪/חודש",
+    "rooms": "{{count}} חדרים",
+    "sqm": "{{size}} מ\"ר",
+    "floor": "קומה {{floor}}"
+  }
+}
