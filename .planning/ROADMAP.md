@@ -107,10 +107,10 @@ Plans:
   5. User can filter by floor number, entry date, furnished/unfurnished, pets, parking, elevator, and mamad
   6. User can sort results by price, date posted, or relevance
   7. Filters update map pins and listing results in real-time
-**Plans**: TBD
+**Plans**: 1 of TBD
 
 Plans:
-- [ ] 05-01: TBD
+- [x] 05-01-PLAN.md - Filter UI: useFilters, useFilteredListings, FilterPanel component
 
 ### Phase 6: Listing Details
 **Goal**: Users can view complete listing information and contact landlords
@@ -198,7 +198,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 2. Database & Core Schema | 2/2 | ✓ Complete | 2026-02-13 |
 | 3. Yad2 Scraper | 4/4 | ✓ Complete | 2026-02-14 |
 | 4. Frontend Foundation | 3/3 | ✓ Complete | 2026-02-14 |
-| 5. Search & Filters | 0/TBD | Not started | - |
+| 5. Search & Filters | 1/TBD | In progress | - |
 | 6. Listing Details | 0/TBD | Not started | - |
 | 7. Additional Sources | 0/TBD | Not started | - |
 | 8. User Features | 0/TBD | Not started | - |

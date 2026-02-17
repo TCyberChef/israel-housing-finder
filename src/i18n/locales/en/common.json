@@ -12,5 +12,18 @@
     "rooms": "{{count}} rooms",
     "sqm": "{{size}} sqm",
     "floor": "Floor {{floor}}"
+  },
+  "filters": {
+    "ariaLabel": "Search and filter listings",
+    "searchPlaceholder": "Search by city or address...",
+    "priceMin": "Min price",
+    "priceMax": "Max price",
+    "rooms": "Rooms",
+    "sortLabel": "Sort by",
+    "sortNewest": "Newest first",
+    "sortPriceAsc": "Price: low to high",
+    "sortPriceDesc": "Price: high to low",
+    "resultCount": "{{count}} results",
+    "clearAll": "Clear filters"
   }
 }
