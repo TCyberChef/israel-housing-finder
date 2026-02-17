@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-13)
 
 ## Current Position
 
-Phase: 4 of 10 (Frontend Foundation)
-Plan: 3 of 3 in current phase - COMPLETE
-Status: Phase complete
-Last activity: 2026-02-14 - Completed 04-03-PLAN.md (Map and Listing UI)
+Phase: 5 of 10 (Search & Filters)
+Plan: 1 of 2 in current phase - COMPLETE
+Status: Phase in progress
+Last activity: 2026-02-17 - Completed 05-01-PLAN.md (Search & Filters UI)
 
-Progress: [████████░░] 80%
+Progress: [████████░░] 82%
 
 ## Performance Metrics
 
@@ -31,6 +31,7 @@ Progress: [████████░░] 80%
 | 02-database-core-schema | 2 | 5 min | 2.5 min |
 | 03-yad2-scraper | 4 | 7 min | 1.8 min |
 | 04-frontend-foundation | 3 | 11 min | 3.7 min |
+| 05-search-filters | 1 | - | - |
 
 **Recent Trend:**
 - Last 5 plans: 03-03 (2 min), 03-04 (2 min), 04-01 (1 min), 04-02 (1 min), 04-03 (9 min)
@@ -76,6 +77,9 @@ Recent decisions affecting current work:
 - **Marker-to-card sync with scrollIntoView:** Marker click opens popup and scrolls to corresponding card with 2-second highlight (Plan 04-03)
 - **60/40 desktop split, 50vh mobile:** Responsive layout per CONTEXT.md specifications (Plan 04-03)
 - **CSS logical properties for RTL:** Ensures proper layout direction for Hebrew text (Plan 04-03)
+- **Client-side filtering over Supabase queries:** Dataset small enough (<5k listings), avoids round-trips, enables instant map+list sync (Plan 05-01)
+- **Rooms filter as minimum not exact:** filter=3 shows 3, 3.5, 4+ rooms — matches user intent for "at least N rooms" (Plan 05-01)
+- **__NEXT_DATA__ JSON as primary scraper strategy:** Yad2 Next.js SSR embeds listing data in structured JSON, more stable than HTML class names (fix 2026-02-17)
 
 ### Pending Todos
 

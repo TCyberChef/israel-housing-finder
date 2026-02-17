@@ -12,5 +12,18 @@
     "rooms": "{{count}} חדרים",
     "sqm": "{{size}} מ\"ר",
     "floor": "קומה {{floor}}"
+  },
+  "filters": {
+    "ariaLabel": "סינון וחיפוש דירות",
+    "searchPlaceholder": "חיפוש לפי עיר או כתובת...",
+    "priceMin": "מחיר מינימום",
+    "priceMax": "מחיר מקסימום",
+    "rooms": "חדרים",
+    "sortLabel": "מיון לפי",
+    "sortNewest": "חדש ביותר",
+    "sortPriceAsc": "מחיר - מהנמוך לגבוה",
+    "sortPriceDesc": "מחיר - מהגבוה לנמוך",
+    "resultCount": "{{count}} תוצאות",
+    "clearAll": "נקה סינון"
   }
 }
