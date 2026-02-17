@@ -3,12 +3,17 @@ import { AppHeader } from './components/Layout/AppHeader';
 import { SplitLayout } from './components/Layout/SplitLayout';
 import { LeafletMap } from './components/Map/LeafletMap';
 import { ListingList } from './components/Listings/ListingList';
+import { FilterPanel } from './components/Filters/FilterPanel';
 import { useListings } from './hooks/useListings';
+import { useFilters } from './hooks/useFilters';
+import { useFilteredListings } from './hooks/useFilteredListings';
 import { useRTL } from './hooks/useRTL';
 import './App.css';
 
 function App() {
   const { listings, loading, error } = useListings();
+  const { filters, setFilter, clearFilters, hasActiveFilters } = useFilters();
+  const filteredListings = useFilteredListings(listings, filters);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
   // Apply RTL layout on language change
@@ -26,17 +31,26 @@ function App() {
       <SplitLayout
         mapContent={
           <LeafletMap
-            listings={listings}
+            listings={filteredListings}
             onMarkerClick={handleMarkerClick}
           />
         }
         listContent={
-          <ListingList
-            listings={listings}
-            highlightedId={highlightedId}
-            loading={loading}
-            error={error}
-          />
+          <>
+            <FilterPanel
+              filters={filters}
+              onFilterChange={setFilter}
+              onClearFilters={clearFilters}
+              hasActiveFilters={hasActiveFilters}
+              resultCount={filteredListings.length}
+            />
+            <ListingList
+              listings={filteredListings}
+              highlightedId={highlightedId}
+              loading={loading}
+              error={error}
+            />
+          </>
         }
       />
     </div>
