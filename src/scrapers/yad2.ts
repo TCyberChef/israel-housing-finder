@@ -305,7 +305,7 @@ export async function scrapeYad2(): Promise<ScraperResult> {
 
     // Filter out items missing required fields and map to Listing type
     const listings: Listing[] = allRawListings
-      .filter((item: RawListing) => item.id && item.address && item.city)
+      .filter((item: RawListing) => item.id && item.address && item.city && item.price > 0)
       .map((item: RawListing) => ({
         id: item.id,
         address: item.address,
@@ -337,7 +337,13 @@ export async function scrapeYad2(): Promise<ScraperResult> {
     });
     throw error;
   } finally {
-    await browser.close();
+    try {
+      await browser.close();
+    } catch (closeErr) {
+      log("warn", "Failed to close browser", {
+        error: closeErr instanceof Error ? closeErr.message : String(closeErr),
+      });
+    }
     log("info", "Browser closed");
   }
 }
