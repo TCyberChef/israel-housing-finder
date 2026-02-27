@@ -61,12 +61,28 @@ export async function upsertListings(listings: Listing[]): Promise<void> {
 
       if (existing) {
         // Duplicate found: update existing listing's mutable fields
+        // Fetch existing sources so we can append rather than overwrite
+        const { data: existingListing } = await supabase
+          .from("listings")
+          .select("sources")
+          .eq("id", existing.listing_id)
+          .single();
+
+        const existingSources: Array<{ platform: string; url: string; scraped_at: string }> =
+          Array.isArray(existingListing?.sources) ? existingListing.sources : [];
+
+        // Merge: replace entry for same platform, append if new platform
+        const mergedSources = existingSources.filter(
+          (s) => s.platform !== listing.source_platform
+        );
+        mergedSources.push(...sources);
+
         const { error: updateError } = await supabase
           .from("listings")
           .update({
             price: listing.price,
             photos: listing.photos,
-            sources,
+            sources: mergedSources,
             last_seen: now,
             is_active: true,
           })
