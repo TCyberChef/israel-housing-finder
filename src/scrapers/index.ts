@@ -16,11 +16,27 @@ export async function main(): Promise<void> {
   const result = await scrapeYad2();
   log("info", `Scraped ${result.count} listings`);
 
-  await upsertListings(result.listings);
-  log("info", "Listings saved to database");
+  if (result.count > 0) {
+    try {
+      await upsertListings(result.listings);
+      log("info", "Listings saved to database");
+    } catch (err) {
+      log("error", "Failed to save listings to database", {
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  } else {
+    log("warn", "No new listings to save — skipping upsert");
+  }
 
-  await markStaleListings();
-  log("info", "Stale listings marked inactive");
+  try {
+    await markStaleListings();
+    log("info", "Stale listings marked inactive");
+  } catch (err) {
+    log("error", "Failed to mark stale listings", {
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
 
   log("info", "Scraper completed successfully");
 }

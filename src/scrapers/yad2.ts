@@ -1,37 +1,38 @@
-import puppeteer from "puppeteer-extra";
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import { Listing, ScraperResult } from "./types";
 import { log } from "./utils/logger";
 import { withRetry } from "./utils/retry";
 
-// Register stealth plugin before launching browser
-puppeteer.use(StealthPlugin());
-
-/** Delay between page load and extraction (rate limiting) */
-const POST_LOAD_DELAY_MS = 3000;
-
-/** Number of pages to scrape (Yad2 shows ~20 listings per page) */
+/** Number of pages to scrape */
 const MAX_PAGES = 3;
 
-/** Browser launch arguments for headless scraping */
-const BROWSER_ARGS = [
-  "--no-sandbox",
-  "--disable-setuid-sandbox",
-  "--disable-dev-shm-usage", // GitHub Actions compatibility
-];
+/** Delay between page requests (rate limiting) */
+const REQUEST_DELAY_MS = 2000;
 
-/** Full user agent string to mimic Chrome on Windows */
-const USER_AGENT =
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+/** Yad2 API gateway for rental feed search */
+const YAD2_API_URL = "https://gw.yad2.co.il/feed-search-legacy/realestate/rent";
 
-/** Target URL for Yad2 rental listings */
-const YAD2_RENT_URL = "https://www.yad2.co.il/realestate/rent";
+/** Yad2 SSR page URL */
+const YAD2_PAGE_URL = "https://www.yad2.co.il/realestate/rent";
 
-/**
- * Raw listing data extracted from the page.
- * Uses serializable types only (no DOM references) so it can be
- * returned from page.evaluate() across the Node.js/browser boundary.
- */
+/** Browser-like headers to reduce bot detection */
+const BROWSER_HEADERS: Record<string, string> = {
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  Accept:
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+  "Accept-Language": "he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7",
+  "Cache-Control": "no-cache",
+  Pragma: "no-cache",
+};
+
+/** JSON API headers */
+const API_HEADERS: Record<string, string> = {
+  ...BROWSER_HEADERS,
+  Accept: "application/json, text/plain, */*",
+  Origin: "https://www.yad2.co.il",
+  Referer: "https://www.yad2.co.il/",
+};
+
 interface RawListing {
   id: string;
   address: string;
@@ -44,308 +45,368 @@ interface RawListing {
 }
 
 /**
- * Extract listing data from the current page DOM.
- * Runs inside the browser context via page.evaluate().
- *
- * Strategy 1 (primary): Extract from __NEXT_DATA__ JSON.
- * Yad2 is a Next.js app that server-side renders listing data into a
- * <script id="__NEXT_DATA__"> tag. This JSON is more stable than HTML
- * class names and provides clean structured data.
- *
- * Data path: props.pageProps.dehydratedState.queries[i].state.data.data.feed.feed_items
- * Each feed item has: id, title_1 (address), city, row_4 (rooms/floor/sqm), price, images
- *
- * Strategy 2 (fallback): CSS selectors with multiple alternatives per field.
- * Used if __NEXT_DATA__ is absent or returns no listings.
+ * Parse feed items from Yad2 JSON data.
+ * Handles both API response and __NEXT_DATA__ structures
+ * by recursively searching for the feed_items array.
  */
-function extractListingsFromPage(): RawListing[] {
-  // === Strategy 1: __NEXT_DATA__ JSON (Next.js server-side embedded data) ===
-  try {
-    const nextDataEl = document.getElementById("__NEXT_DATA__");
-    if (nextDataEl && nextDataEl.textContent) {
-      const nextData = JSON.parse(nextDataEl.textContent);
-      const queries =
-        nextData?.props?.pageProps?.dehydratedState?.queries ?? [];
+function parseFeedItems(data: Record<string, unknown>): RawListing[] {
+  const feedItems = findFeedItems(data);
+  if (!feedItems || feedItems.length === 0) return [];
 
-      for (const query of queries) {
-        const feedItems =
-          query?.state?.data?.data?.feed?.feed_items;
+  return feedItems
+    .filter(
+      (item: Record<string, unknown>) =>
+        item && item.id && item.highlight_text !== "תיווך"
+    )
+    .map((item: Record<string, unknown>) => {
+      const row4 = Array.isArray(item.row_4) ? item.row_4 : [];
+      const priceStr = String(item.price ?? "0");
+      const price = parseInt(priceStr.replace(/\D/g, ""), 10) || 0;
+      const id = String(item.id ?? item.link_token ?? "");
 
-        if (!Array.isArray(feedItems) || feedItems.length === 0) continue;
-
-        const results = feedItems
-          .filter(
-            // Filter out broker advertisements ("תיווך" = brokerage)
-            (item) => item && item.id && item.highlight_text !== "תיווך"
-          )
-          .map((item) => {
-            const row4 = Array.isArray(item.row_4) ? item.row_4 : [];
-            const priceStr = String(item.price ?? "0");
-            const price = parseInt(priceStr.replace(/\D/g, ""), 10) || 0;
-            const id = String(item.id ?? item.link_token ?? "");
-
-            // Extract photos from the images array (field name varies)
-            let photos: string[] = [];
-            const imagesField = item.images ?? item.image_urls ?? item.img;
-            if (Array.isArray(imagesField)) {
-              photos = imagesField
-                .map((img) => {
-                  if (typeof img === "string") return img;
-                  if (img && typeof img === "object") {
-                    return String(
-                      img.src ?? img.url ?? img.thumbnail ?? img.big ?? ""
-                    );
-                  }
-                  return "";
-                })
-                .filter((src) => src && !src.includes("data:"));
+      let photos: string[] = [];
+      const imagesField = (item.images ?? item.image_urls ?? item.img) as
+        | unknown[]
+        | undefined;
+      if (Array.isArray(imagesField)) {
+        photos = imagesField
+          .map((img) => {
+            if (typeof img === "string") return img;
+            if (img && typeof img === "object") {
+              const imgObj = img as Record<string, unknown>;
+              return String(
+                imgObj.src ?? imgObj.url ?? imgObj.thumbnail ?? imgObj.big ?? ""
+              );
             }
-
-            const roomsVal = row4[0]?.value;
-            const sizeVal = row4[2]?.value;
-            const sizeNum =
-              parseInt(String(sizeVal ?? "0").replace(/\D/g, ""), 10) ||
-              undefined;
-
-            return {
-              id,
-              address: String(item.title_1 ?? "").trim(),
-              city: String(item.city ?? "").trim(),
-              price,
-              rooms: parseFloat(String(roomsVal ?? "0")) || 0,
-              size_sqm: sizeNum,
-              photos,
-              source_url: "https://www.yad2.co.il/item/" + id,
-            };
-          });
-
-        if (results.length > 0) {
-          return results;
-        }
+            return "";
+          })
+          .filter((src) => src && !src.includes("data:"));
       }
-    }
-  } catch (e) {
-    // Fall through to CSS selector strategy
-  }
 
-  // === Strategy 2: CSS selectors (fallback) ===
-  // Yad2 has used .feeditem since ~2020; try class-substring matches as backup.
-  const containerSelectors = [
-    ".feeditem",
-    '[class*="feed_item"]',
-    '[class*="feeditem"]',
-    "[data-id]",
-  ];
+      const roomsVal = (row4[0] as Record<string, unknown>)?.value;
+      const sizeVal = (row4[2] as Record<string, unknown>)?.value;
+      const sizeNum =
+        parseInt(String(sizeVal ?? "0").replace(/\D/g, ""), 10) || undefined;
 
-  let items: Element[] = [];
-  for (const sel of containerSelectors) {
-    const found = Array.from(document.querySelectorAll(sel));
-    if (found.length > 0) {
-      items = found;
-      break;
-    }
-  }
-
-  /** Try multiple selectors, return first non-empty text found */
-  function getText(el: Element, selectors: string[]): string {
-    for (const s of selectors) {
-      const found = el.querySelector(s);
-      const text = found?.textContent?.trim();
-      if (text) return text;
-    }
-    return "";
-  }
-
-  return items.map((item) => {
-    const id =
-      item.getAttribute("data-id") ??
-      item.getAttribute("data-nagish-id") ??
-      "";
-    const linkEl = item.querySelector("a[href]");
-    const href = linkEl?.getAttribute("href") ?? "";
-    const source_url = href
-      ? "https://www.yad2.co.il" + (href.startsWith("/") ? "" : "/") + href
-      : id
-      ? "https://www.yad2.co.il/item/" + id
-      : "";
-
-    const address = getText(item, [
-      ".address",
-      '[class*="address"]',
-      '[data-nagish="listing-address"]',
-      ".title-1",
-      '[class*="title1"]',
-    ]);
-    const city = getText(item, [
-      ".city",
-      '[class*="city"]',
-      '[class*="location"]',
-      '[class*="settlement"]',
-    ]);
-    const priceText = getText(item, [
-      ".price",
-      '[class*="price"]',
-      '[class*="Price"]',
-    ]);
-    const roomsText = getText(item, [
-      ".rooms",
-      '[class*="rooms"]',
-      '[class*="Rooms"]',
-    ]);
-    const sizeText = getText(item, [
-      ".size",
-      '[class*="size"]',
-      '[class*="sqm"]',
-      '[class*="area"]',
-    ]);
-
-    const photos = Array.from(item.querySelectorAll("img"))
-      .map((img) => (img as HTMLImageElement).src)
-      .filter((src) => src && !src.includes("data:"));
-
-    return {
-      id,
-      address,
-      city,
-      price: parseInt(priceText.replace(/\D/g, ""), 10) || 0,
-      rooms: parseFloat(roomsText) || 0,
-      size_sqm:
-        parseInt(sizeText.replace(/\D/g, ""), 10) || undefined,
-      photos,
-      source_url,
-    };
-  });
+      return {
+        id,
+        address: String(item.title_1 ?? "").trim(),
+        city: String(item.city ?? "").trim(),
+        price,
+        rooms: parseFloat(String(roomsVal ?? "0")) || 0,
+        size_sqm: sizeNum,
+        photos,
+        source_url: "https://www.yad2.co.il/item/" + id,
+      };
+    });
 }
 
 /**
- * Scrape rental listings from Yad2.
+ * Recursively search for feed_items array in nested JSON.
+ */
+function findFeedItems(
+  obj: unknown,
+  depth = 0
+): Record<string, unknown>[] | null {
+  if (depth > 10 || !obj || typeof obj !== "object") return null;
+
+  const record = obj as Record<string, unknown>;
+
+  if (Array.isArray(record.feed_items) && record.feed_items.length > 0) {
+    return record.feed_items as Record<string, unknown>[];
+  }
+
+  for (const value of Object.values(record)) {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        const result = findFeedItems(item, depth + 1);
+        if (result) return result;
+      }
+    } else if (value && typeof value === "object") {
+      const result = findFeedItems(value, depth + 1);
+      if (result) return result;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Extract __NEXT_DATA__ JSON from an HTML page string.
+ */
+function extractNextData(html: string): Record<string, unknown> | null {
+  const match = html.match(
+    /<script\s+id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/
+  );
+  if (!match?.[1]) return null;
+  try {
+    return JSON.parse(match[1]);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Check if a response was blocked by bot protection.
+ */
+function isBotBlocked(text: string, url: string): boolean {
+  const blocked =
+    text.includes("ShieldSquare") ||
+    text.includes("perfdrive.com") ||
+    text.includes("captcha") ||
+    text.includes("challenge-platform");
+  if (blocked) {
+    log("warn", "Bot protection detected", { url });
+  }
+  return blocked;
+}
+
+/**
+ * Parse listings from an HTTP response (HTML or JSON).
+ */
+function parseResponse(text: string, contentType: string): RawListing[] {
+  // Try JSON first
+  if (contentType.includes("application/json")) {
+    try {
+      return parseFeedItems(JSON.parse(text));
+    } catch {
+      // fall through
+    }
+  }
+
+  // Try extracting __NEXT_DATA__ from HTML
+  const nextData = extractNextData(text);
+  if (nextData) {
+    return parseFeedItems(nextData);
+  }
+
+  return [];
+}
+
+/**
+ * Strategy 1 (preferred): Fetch via ScraperAPI proxy.
+ * Bypasses bot protection using residential proxies and browser rendering.
+ * Requires SCRAPER_API_KEY env var (free tier: 5000 credits/month at scraperapi.com).
+ */
+async function fetchViaProxy(page: number): Promise<RawListing[]> {
+  const apiKey = process.env.SCRAPER_API_KEY;
+  if (!apiKey) return [];
+
+  const targetUrl =
+    page === 1 ? YAD2_PAGE_URL : `${YAD2_PAGE_URL}?page=${page}`;
+
+  const proxyUrl = `https://api.scraperapi.com?api_key=${apiKey}&url=${encodeURIComponent(targetUrl)}&render=true&country_code=il`;
+
+  log("info", "Fetching via ScraperAPI proxy", { page, targetUrl });
+
+  const response = await fetch(proxyUrl, { signal: AbortSignal.timeout(60000) });
+
+  if (!response.ok) {
+    log("warn", "ScraperAPI returned error", {
+      status: response.status,
+      page,
+    });
+    return [];
+  }
+
+  const text = await response.text();
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (isBotBlocked(text, targetUrl)) return [];
+
+  return parseResponse(text, contentType);
+}
+
+/**
+ * Strategy 2: Direct fetch from the Yad2 API gateway.
+ */
+async function fetchFromApi(page: number): Promise<RawListing[]> {
+  const url = page === 1 ? YAD2_API_URL : `${YAD2_API_URL}?page=${page}`;
+  log("info", "Trying API gateway (direct)", { url, page });
+
+  const response = await fetch(url, {
+    headers: API_HEADERS,
+    redirect: "manual",
+  });
+
+  if (response.status === 302 || response.status === 301) {
+    log("warn", "API returned redirect (bot protection)", {
+      status: response.status,
+    });
+    return [];
+  }
+
+  if (!response.ok) {
+    log("warn", "API returned error", { status: response.status });
+    return [];
+  }
+
+  const text = await response.text();
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (isBotBlocked(text, url)) return [];
+
+  return parseResponse(text, contentType);
+}
+
+/**
+ * Strategy 3: Direct fetch of the SSR HTML page.
+ */
+async function fetchFromPage(page: number): Promise<RawListing[]> {
+  const url =
+    page === 1 ? YAD2_PAGE_URL : `${YAD2_PAGE_URL}?page=${page}`;
+  log("info", "Trying SSR page (direct)", { url, page });
+
+  const response = await fetch(url, {
+    headers: BROWSER_HEADERS,
+    redirect: "manual",
+  });
+
+  if (response.status === 302 || response.status === 301) {
+    log("warn", "Page returned redirect (bot protection)", {
+      status: response.status,
+    });
+    return [];
+  }
+
+  if (!response.ok) {
+    log("warn", "Page returned error", { status: response.status });
+    return [];
+  }
+
+  const text = await response.text();
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (isBotBlocked(text, url)) return [];
+
+  return parseResponse(text, contentType);
+}
+
+/**
+ * Try all strategies for a given page number.
+ * Order: proxy (if configured) -> API gateway -> SSR page
+ */
+async function fetchPage(pageNum: number): Promise<RawListing[]> {
+  // Strategy 1: ScraperAPI proxy (if configured)
+  if (process.env.SCRAPER_API_KEY) {
+    try {
+      const listings = await withRetry(() => fetchViaProxy(pageNum), 2, 2000);
+      if (listings.length > 0) return listings;
+    } catch (err) {
+      log("warn", "Proxy fetch failed", {
+        page: pageNum,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }
+
+  // Strategy 2: Direct API gateway
+  try {
+    const listings = await withRetry(() => fetchFromApi(pageNum), 2, 1000);
+    if (listings.length > 0) return listings;
+  } catch (err) {
+    log("warn", "API gateway fetch failed", {
+      page: pageNum,
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+
+  // Strategy 3: Direct SSR page
+  try {
+    const listings = await withRetry(() => fetchFromPage(pageNum), 2, 1000);
+    if (listings.length > 0) return listings;
+  } catch (err) {
+    log("warn", "SSR page fetch failed", {
+      page: pageNum,
+      error: err instanceof Error ? err.message : String(err),
+    });
+  }
+
+  return [];
+}
+
+/**
+ * Scrape rental listings from Yad2 using HTTP requests.
  *
- * Launches a headless Chrome browser with stealth plugin to evade
- * anti-scraping detection, navigates to the Yad2 rental page,
- * and extracts listing data from the HTML.
+ * Tries multiple strategies in order:
+ * 1. ScraperAPI proxy (if SCRAPER_API_KEY is set) — bypasses bot protection
+ * 2. Direct API gateway (gw.yad2.co.il)
+ * 3. Direct SSR page (www.yad2.co.il)
  *
- * Scrapes up to MAX_PAGES pages for broader coverage.
- *
- * @returns ScraperResult with array of listings and metadata
- * @throws Error if navigation or extraction fails after retries
+ * No browser/Chrome required. Handles bot protection gracefully.
  */
 export async function scrapeYad2(): Promise<ScraperResult> {
-  log("info", "Starting Yad2 scraper", { max_pages: MAX_PAGES });
-
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: BROWSER_ARGS,
+  const hasProxy = !!process.env.SCRAPER_API_KEY;
+  log("info", "Starting Yad2 scraper (HTTP mode)", {
+    max_pages: MAX_PAGES,
+    proxy_configured: hasProxy,
   });
+
+  if (!hasProxy) {
+    log("warn", "SCRAPER_API_KEY not set — direct requests may be blocked by Yad2 bot protection. " +
+      "Get a free API key at https://www.scraperapi.com (5000 credits/month free).");
+  }
 
   const allRawListings: RawListing[] = [];
 
-  try {
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1920, height: 1080 });
-    await page.setUserAgent(USER_AGENT);
+  for (let pageNum = 1; pageNum <= MAX_PAGES; pageNum++) {
+    const rawListings = await fetchPage(pageNum);
 
-    for (let pageNum = 1; pageNum <= MAX_PAGES; pageNum++) {
-      const url =
-        pageNum === 1
-          ? YAD2_RENT_URL
-          : `${YAD2_RENT_URL}?page=${pageNum}`;
-
-      log("info", `Navigating to page ${pageNum}`, { url });
-
-      // Navigate with retry and 30s timeout
-      await withRetry(
-        () =>
-          page.goto(url, {
-            waitUntil: "networkidle2",
-            timeout: 30000,
-          }),
-        3,
-        2000
-      );
-
-      // Wait for __NEXT_DATA__ (Next.js SSR data) or listing elements
-      await Promise.race([
-        page.waitForSelector("#__NEXT_DATA__", { timeout: 5000 }),
-        page.waitForSelector(".feeditem", { timeout: 5000 }),
-        page.waitForSelector("[data-id]", { timeout: 5000 }),
-      ]).catch(() => {
-        // None of the selectors appeared within 5s — continue anyway
-        log("warn", "Content selectors not found within 5s, proceeding", {
-          page: pageNum,
-        });
-      });
-
-      // Rate-limiting delay after page load
-      await new Promise((resolve) => setTimeout(resolve, POST_LOAD_DELAY_MS));
-
-      // Extract listings from the page
-      const rawListings = await page.evaluate(extractListingsFromPage);
-
-      if (rawListings.length === 0) {
-        log("warn", "No listings found on page — stopping pagination", {
-          page: pageNum,
-          url,
-          hint: "Selectors or __NEXT_DATA__ path may need updating",
-        });
-        break;
-      }
-
-      log("info", `Found ${rawListings.length} listings on page ${pageNum}`, {
+    if (rawListings.length === 0) {
+      log("warn", "No listings found on page — stopping pagination", {
         page: pageNum,
+        hint: hasProxy
+          ? "Proxy may be rate-limited or Yad2 structure changed"
+          : "Set SCRAPER_API_KEY to bypass bot protection",
       });
-      allRawListings.push(...rawListings);
+      break;
     }
 
-    if (allRawListings.length === 0) {
-      log("warn", "No listings found across all pages", {
-        url: YAD2_RENT_URL,
-        pages_tried: MAX_PAGES,
-      });
+    log("info", `Found ${rawListings.length} listings on page ${pageNum}`);
+    allRawListings.push(...rawListings);
+
+    if (pageNum < MAX_PAGES) {
+      await new Promise((resolve) => setTimeout(resolve, REQUEST_DELAY_MS));
     }
-
-    // Filter out items missing required fields and map to Listing type
-    const listings: Listing[] = allRawListings
-      .filter((item: RawListing) => item.id && item.address && item.city && item.price > 0)
-      .map((item: RawListing) => ({
-        id: item.id,
-        address: item.address,
-        city: item.city,
-        price: item.price || 0,
-        rooms: item.rooms || 0,
-        size_sqm: item.size_sqm || undefined,
-        photos: item.photos,
-        source_url: item.source_url,
-        source_platform: "yad2" as const,
-        source_id: item.id,
-      }));
-
-    log("info", `Scraped ${listings.length} listings from Yad2`, {
-      total_found: allRawListings.length,
-      after_filter: listings.length,
-      filtered_out: allRawListings.length - listings.length,
-    });
-
-    return {
-      listings,
-      scrapedAt: new Date().toISOString(),
-      count: listings.length,
-    };
-  } catch (error) {
-    log("error", "Yad2 scraper failed", {
-      error: error instanceof Error ? error.message : String(error),
-      url: YAD2_RENT_URL,
-    });
-    throw error;
-  } finally {
-    try {
-      await browser.close();
-    } catch (closeErr) {
-      log("warn", "Failed to close browser", {
-        error: closeErr instanceof Error ? closeErr.message : String(closeErr),
-      });
-    }
-    log("info", "Browser closed");
   }
+
+  if (allRawListings.length === 0) {
+    log("warn", "No listings fetched from Yad2 this run", {
+      pages_tried: MAX_PAGES,
+      reason: hasProxy
+        ? "Proxy issue or site changes. Will retry next run."
+        : "Bot protection active. Add SCRAPER_API_KEY secret to fix.",
+    });
+  }
+
+  const listings: Listing[] = allRawListings
+    .filter(
+      (item) => item.id && item.address && item.city && item.price > 0
+    )
+    .map((item) => ({
+      id: item.id,
+      address: item.address,
+      city: item.city,
+      price: item.price,
+      rooms: item.rooms,
+      size_sqm: item.size_sqm,
+      photos: item.photos,
+      source_url: item.source_url,
+      source_platform: "yad2" as const,
+      source_id: item.id,
+    }));
+
+  log("info", `Scraped ${listings.length} listings from Yad2`, {
+    total_found: allRawListings.length,
+    after_filter: listings.length,
+    filtered_out: allRawListings.length - listings.length,
+  });
+
+  return {
+    listings,
+    scrapedAt: new Date().toISOString(),
+    count: listings.length,
+  };
 }
 
 // Test harness: run directly with `npx tsx src/scrapers/yad2.ts`
